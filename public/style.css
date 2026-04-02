@@ -1,0 +1,244 @@
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f4f6f9;
+  color: #1a1a2e;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+header {
+  background: #1a1a2e;
+  color: #fff;
+  padding: 2rem;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.4rem;
+}
+
+header p {
+  color: #a0aec0;
+  font-size: 0.95rem;
+}
+
+/* Main */
+main {
+  flex: 1;
+  max-width: 960px;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Sections */
+section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+section h2 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #2d3748;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+/* Formulaire */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+input, select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: #f7fafc;
+  transition: border-color 0.2s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #4299e1;
+  background: #fff;
+}
+
+/* Boutons */
+button {
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.1s;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+#btnAjouter {
+  background: #4299e1;
+  color: #fff;
+}
+
+#btnAjouter:hover {
+  background: #3182ce;
+}
+
+/* Tableau */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+thead tr {
+  background: #edf2f7;
+}
+
+th, td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  color: #718096;
+  letter-spacing: 0.05em;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background: #f7fafc;
+}
+
+td.vide {
+  text-align: center;
+  color: #a0aec0;
+  padding: 2rem;
+}
+
+.btn-supprimer {
+  background: none;
+  color: #e53e3e;
+  border: 1px solid #feb2b2;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+}
+
+.btn-supprimer:hover {
+  background: #fff5f5;
+}
+
+/* Synthèse */
+.synthese {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.synthese-bloc {
+  flex: 1;
+  min-width: 160px;
+  background: #edf2f7;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.synthese-bloc span {
+  font-size: 0.82rem;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.synthese-bloc strong {
+  font-size: 1.4rem;
+  color: #2d3748;
+}
+
+.total-ttc {
+  background: #1a1a2e;
+}
+
+.total-ttc span,
+.total-ttc strong {
+  color: #fff;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+#btnExportCSV {
+  background: #48bb78;
+  color: #fff;
+}
+
+#btnExportCSV:hover {
+  background: #38a169;
+}
+
+#btnReset {
+  background: #fff;
+  color: #e53e3e;
+  border: 1px solid #feb2b2;
+}
+
+#btnReset:hover {
+  background: #fff5f5;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.8rem;
+  color: #a0aec0;
+}

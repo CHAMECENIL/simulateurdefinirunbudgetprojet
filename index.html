@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulateur — Définir un budget projet</title>
+  <link rel="stylesheet" href="public/style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Simulateur de budget projet</h1>
+    <p>Estimez et structurez le budget de votre projet en quelques étapes.</p>
+  </header>
+
+  <main>
+
+    <!-- Formulaire d'ajout de poste -->
+    <section class="formulaire">
+      <h2>Ajouter un poste de dépense</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="categorie">Catégorie</label>
+          <select id="categorie">
+            <option value="Ressources humaines">Ressources humaines</option>
+            <option value="Matériel">Matériel</option>
+            <option value="Sous-traitance">Sous-traitance</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Formation">Formation</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <input type="text" id="description" placeholder="Ex : Développeur front-end" />
+        </div>
+        <div class="form-group">
+          <label for="quantite">Quantité</label>
+          <input type="number" id="quantite" min="1" value="1" />
+        </div>
+        <div class="form-group">
+          <label for="coutUnitaire">Coût unitaire (€)</label>
+          <input type="number" id="coutUnitaire" min="0" placeholder="0" />
+        </div>
+      </div>
+      <button id="btnAjouter">+ Ajouter le poste</button>
+    </section>
+
+    <!-- Tableau des postes -->
+    <section class="tableau">
+      <h2>Postes de dépenses</h2>
+      <table id="tablePostes">
+        <thead>
+          <tr>
+            <th>Catégorie</th>
+            <th>Description</th>
+            <th>Quantité</th>
+            <th>Coût unitaire</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="corpsTableau">
+          <tr id="ligneVide">
+            <td colspan="6" class="vide">Aucun poste ajouté pour le moment.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Synthèse -->
+    <section class="synthese">
+      <div class="synthese-bloc">
+        <span>Total HT</span>
+        <strong id="totalHT">0 €</strong>
+      </div>
+      <div class="synthese-bloc">
+        <span>TVA (20%)</span>
+        <strong id="totalTVA">0 €</strong>
+      </div>
+      <div class="synthese-bloc total-ttc">
+        <span>Total TTC</span>
+        <strong id="totalTTC">0 €</strong>
+      </div>
+    </section>
+
+    <!-- Actions -->
+    <section class="actions">
+      <button id="btnExportCSV">Exporter en CSV</button>
+      <button id="btnReset" class="secondaire">Réinitialiser</button>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Simulateur budget projet — Chamecenil</p>
+  </footer>
+
+  <script src="src/app.js"></script>
+</body>
+</html>
