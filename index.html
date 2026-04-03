@@ -3,99 +3,398 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulateur — Définir un budget projet</title>
+  <title>BudgetQuest — Simulateur de Gestion Budgétaire</title>
   <link rel="stylesheet" href="public/style.css" />
 </head>
 <body>
 
-  <header>
-    <h1>Simulateur de budget projet</h1>
-    <p>Estimez et structurez le budget de votre projet en quelques étapes.</p>
-  </header>
+<!-- ══════════════════════════════════════════════════════════
+     ÉCRAN 1 : ACCUEIL
+     ══════════════════════════════════════════════════════════ -->
+<div id="screen-home" class="screen">
+  <div class="home-inner">
+    <div class="home-logo">💰</div>
+    <h1 class="home-title">BudgetQuest</h1>
+    <p class="home-subtitle">
+      Maîtrisez l'art de construire et défendre un budget projet face à des clients et DAF exigeants.
+      Progressez de consultant junior à expert en portfolio management.
+    </p>
+    <div class="home-buttons">
+      <button id="btn-start" class="btn btn-primary">🚀 Commencer</button>
+      <button id="btn-continue" class="btn btn-secondary">📂 Mes niveaux</button>
+    </div>
+    <div style="margin-top:3rem; color:var(--text-muted); font-size:.8rem;">
+      10 niveaux · Scénarios variés · Timer 20 min · Parties prenantes consultables
+    </div>
+    <div class="home-progress" id="home-progress-dots">
+      <!-- Généré par JS -->
+    </div>
+  </div>
+</div>
 
-  <main>
+<!-- ══════════════════════════════════════════════════════════
+     ÉCRAN 2 : SÉLECTION DE NIVEAUX
+     ══════════════════════════════════════════════════════════ -->
+<div id="screen-levels" class="screen">
+  <div class="levels-header">
+    <div>
+      <h2>🗺️ Choisissez votre niveau</h2>
+      <p>Débloquez les niveaux en validant le précédent avec ★★ minimum.</p>
+    </div>
+    <button id="btn-back-levels" class="btn btn-ghost">← Accueil</button>
+  </div>
+  <div id="levels-grid" class="levels-grid">
+    <!-- Généré par JS -->
+  </div>
+</div>
 
-    <!-- Formulaire d'ajout de poste -->
-    <section class="formulaire">
-      <h2>Ajouter un poste de dépense</h2>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="categorie">Catégorie</label>
-          <select id="categorie">
-            <option value="Ressources humaines">Ressources humaines</option>
-            <option value="Matériel">Matériel</option>
-            <option value="Sous-traitance">Sous-traitance</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Formation">Formation</option>
-            <option value="Autre">Autre</option>
-          </select>
+<!-- ══════════════════════════════════════════════════════════
+     ÉCRAN 3 : BRIEFING DE MISSION
+     ══════════════════════════════════════════════════════════ -->
+<div id="screen-briefing" class="screen">
+  <div class="briefing-header">
+    <div>
+      <span id="briefing-level-badge" class="game-level-badge">Niveau 1</span>
+      <h2 id="briefing-scenario-title" style="margin-top:.4rem; font-size:1.3rem;"></h2>
+      <p id="briefing-scenario-sub" style="color:var(--text-secondary); font-size:.88rem;"></p>
+    </div>
+    <button class="btn btn-ghost" onclick="BQ_UI.showScreen('levels')">← Niveaux</button>
+  </div>
+
+  <div class="briefing-body">
+
+    <!-- Contexte -->
+    <div class="briefing-context-card">
+      <h3>Contexte de la mission</h3>
+      <p id="briefing-context"></p>
+    </div>
+
+    <!-- Parties prenantes -->
+    <div>
+      <h3 style="font-size:.85rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.8rem;">Vos interlocuteurs</h3>
+      <div class="briefing-stakeholders">
+        <div class="briefing-person">
+          <div id="briefing-client-avatar" class="briefing-avatar"></div>
+          <div class="briefing-person-info">
+            <strong id="briefing-client-name"></strong>
+            <span id="briefing-client-role"></span>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="description">Description</label>
-          <input type="text" id="description" placeholder="Ex : Développeur front-end" />
-        </div>
-        <div class="form-group">
-          <label for="quantite">Quantité</label>
-          <input type="number" id="quantite" min="1" value="1" />
-        </div>
-        <div class="form-group">
-          <label for="coutUnitaire">Coût unitaire (€)</label>
-          <input type="number" id="coutUnitaire" min="0" placeholder="0" />
+        <div class="briefing-person">
+          <div id="briefing-daf-avatar" class="briefing-avatar"></div>
+          <div class="briefing-person-info">
+            <strong id="briefing-daf-name"></strong>
+            <span id="briefing-daf-role"></span>
+            <small id="briefing-daf-arrives"></small>
+          </div>
         </div>
       </div>
-      <button id="btnAjouter">+ Ajouter le poste</button>
-    </section>
+    </div>
 
-    <!-- Tableau des postes -->
-    <section class="tableau">
-      <h2>Postes de dépenses</h2>
-      <table id="tablePostes">
-        <thead>
-          <tr>
-            <th>Catégorie</th>
-            <th>Description</th>
-            <th>Quantité</th>
-            <th>Coût unitaire</th>
-            <th>Total</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="corpsTableau">
-          <tr id="ligneVide">
-            <td colspan="6" class="vide">Aucun poste ajouté pour le moment.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+    <!-- Méta -->
+    <div class="briefing-meta">
+      <div class="briefing-meta-item">
+        <label>Fourchette budget</label>
+        <b id="briefing-budget-range"></b>
+      </div>
+      <div class="briefing-meta-item">
+        <label>Durée</label>
+        <b>20 minutes · 10 tours</b>
+      </div>
+      <div class="briefing-meta-item">
+        <label>Consultations dispo</label>
+        <b>2 parties prenantes</b>
+      </div>
+    </div>
 
-    <!-- Synthèse -->
-    <section class="synthese">
-      <div class="synthese-bloc">
-        <span>Total HT</span>
-        <strong id="totalHT">0 €</strong>
+    <!-- Compétences -->
+    <div>
+      <h3 style="font-size:.85rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:.6rem;">Compétences entraînées</h3>
+      <div id="briefing-skills"></div>
+    </div>
+
+    <!-- Règles du jeu -->
+    <div class="briefing-context-card">
+      <h3>Comment jouer</h3>
+      <p style="color:var(--text-secondary); line-height:1.8; font-size:.88rem;">
+        À chaque tour, votre interlocuteur prend la parole. Choisissez <b>une action</b> parmi les 5 disponibles,
+        puis sélectionnez la meilleure option. Certaines semblent logiques mais sont des <b>pièges</b> — attention !<br><br>
+        Votre <b>satisfaction du sponsor</b> évolue à chaque choix. Plus elle est haute, meilleure est votre note finale.
+        Vous pouvez consulter les parties prenantes <b>2 fois</b> pour obtenir des indices (le timer continue).<br><br>
+        Objectif : atteindre <b>★★ minimum</b> pour passer au niveau suivant.
+      </p>
+    </div>
+
+    <!-- CTA -->
+    <div class="briefing-cta">
+      <button id="btn-start-mission" class="btn btn-primary" style="font-size:1.1rem; padding:.9rem 2.5rem;">
+        🎯 Commencer la mission
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     ÉCRAN 4 : JEU PRINCIPAL
+     ══════════════════════════════════════════════════════════ -->
+<div id="screen-game" class="screen" style="display:none; flex-direction:column;">
+
+  <!-- Top bar -->
+  <div class="game-topbar">
+    <span id="game-level-badge" class="game-level-badge">Niveau 1</span>
+    <span id="game-scenario-title" class="game-scenario-title"></span>
+    <div class="turn-info">
+      <span id="turn-counter">Tour 1 / 10</span>
+      <span id="turn-title"></span>
+      <div class="turn-progress-track">
+        <div id="turn-progress-bar" class="turn-progress-fill"></div>
       </div>
-      <div class="synthese-bloc">
-        <span>TVA (20%)</span>
-        <strong id="totalTVA">0 €</strong>
+    </div>
+    <div id="game-timer" class="game-timer">20:00</div>
+  </div>
+
+  <!-- Barres de satisfaction -->
+  <div class="satisfaction-zone">
+    <div class="sat-row">
+      <span class="sat-label" id="client-sat-label">Client</span>
+      <div class="sat-track">
+        <div id="client-sat-bar" class="sat-fill" style="width:55%"></div>
       </div>
-      <div class="synthese-bloc total-ttc">
-        <span>Total TTC</span>
-        <strong id="totalTTC">0 €</strong>
+      <span id="client-sat-mood" class="sat-mood">🙂</span>
+      <span id="client-sat-value" class="sat-value">55%</span>
+    </div>
+    <div class="sat-row" id="daf-sat-section" style="display:none;">
+      <span class="sat-label" id="daf-sat-label">DAF</span>
+      <div class="sat-track">
+        <div id="daf-sat-bar" class="sat-fill" style="width:45%"></div>
       </div>
-    </section>
+      <span id="daf-sat-mood" class="sat-mood">😐</span>
+      <span id="daf-sat-value" class="sat-value">45%</span>
+    </div>
+    <div id="sat-delta-indicator" class="sat-delta" style="display:none;"></div>
+  </div>
+
+  <!-- Bouton questionnement parties prenantes -->
+  <div class="btn-stakeholder-wrap">
+    <button id="btn-stakeholder">👥 Consulter les parties prenantes (2 restants)</button>
+  </div>
+
+  <!-- Corps -->
+  <div class="game-body" style="flex:1; overflow:hidden;">
+
+    <!-- Sidebar gauche : interlocuteur -->
+    <div class="game-sidebar-left">
+      <div id="speaker-avatar" class="speaker-avatar mood-neutral">👩‍💼</div>
+      <div class="speaker-info">
+        <strong id="speaker-name"></strong>
+        <span id="speaker-role"></span>
+      </div>
+      <div style="margin-top:auto; width:100%;">
+        <div class="sidebar-title">Journal</div>
+        <div id="game-journal"></div>
+      </div>
+    </div>
+
+    <!-- Zone centrale -->
+    <div class="game-center">
+
+      <!-- Dialogue -->
+      <div id="dialogue-box" class="dialogue-box">
+        <div id="dialogue-text"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-panel">
+        <div class="action-panel-title">Quelle action prenez-vous ?</div>
+        <div id="action-buttons" class="action-buttons"></div>
+      </div>
+
+      <!-- Choix -->
+      <div id="choices-panel" class="choices-panel"></div>
+
+      <!-- Score badge tour -->
+      <div id="turn-score-badge" class="turn-score-badge"></div>
+
+    </div>
+
+    <!-- Sidebar droite : budget -->
+    <div class="game-sidebar-right">
+      <div>
+        <div class="sidebar-title">Budget estimé</div>
+        <div id="budget-envelope-display" class="budget-envelope-display"></div>
+        <div id="budget-items-list" class="budget-items-list">
+          <div class="budget-empty">Aucun poste estimé</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bouton Tour suivant -->
+  <div class="btn-next-wrap">
+    <button id="btn-next-turn">Tour suivant →</button>
+  </div>
+
+  <!-- Barre de progression globale -->
+  <div class="global-progress">
+    <span class="global-progress-label">Progression :</span>
+    <div id="global-progress-track" class="global-progress-track"></div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL : QUESTIONNEMENT PARTIES PRENANTES
+     ══════════════════════════════════════════════════════════ -->
+<div id="modal-stakeholder" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>👥 Mode Questionnement — Parties Prenantes</h3>
+      <button id="btn-close-stakeholder" class="modal-close">✕</button>
+    </div>
+
+    <!-- Onglets -->
+    <div class="stakeholder-tabs">
+      <button class="stakeholder-tab" data-tab="client">Client</button>
+      <button class="stakeholder-tab" data-tab="daf">DAF</button>
+      <button class="stakeholder-tab active" data-tab="expert">Expert</button>
+    </div>
+
+    <div class="stakeholder-body">
+      <div class="stakeholder-person">
+        <div id="stakeholder-avatar">🧑‍💻</div>
+        <div class="stakeholder-person-info">
+          <strong id="stakeholder-name"></strong>
+        </div>
+      </div>
+      <div class="stakeholder-hint-box">
+        <div id="stakeholder-hint">Sélectionnez un interlocuteur pour obtenir un indice.</div>
+      </div>
+      <div id="stakeholder-remaining" class="stakeholder-remaining"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     ÉCRAN 5 : RÉSULTATS
+     ══════════════════════════════════════════════════════════ -->
+<div id="screen-results" class="screen">
+
+  <div class="results-header">
+    <span id="result-level-badge" class="game-level-badge" style="display:inline-block; margin-bottom:.5rem;"></span>
+    <h2 id="result-scenario-title" style="font-size:1.3rem; margin-bottom:.3rem;"></h2>
+  </div>
+
+  <div class="results-body">
+
+    <!-- Score hero -->
+    <div class="score-hero">
+      <div class="score-circle-wrap">
+        <svg class="score-circle-svg" viewBox="0 0 120 120">
+          <circle class="score-circle-bg"   cx="60" cy="60" r="54"/>
+          <circle id="score-circle-fill" class="score-circle-fill" cx="60" cy="60" r="54"/>
+        </svg>
+        <div id="score-circle-text" class="score-circle-text">0%</div>
+      </div>
+
+      <div class="result-stars">
+        <span id="result-star-1" class="result-star">☆</span>
+        <span id="result-star-2" class="result-star">☆</span>
+        <span id="result-star-3" class="result-star">☆</span>
+      </div>
+
+      <div id="result-badge" class="result-badge">—</div>
+      <p id="result-feedback-text" class="result-feedback-text"></p>
+    </div>
+
+    <!-- Satisfaction -->
+    <div>
+      <div class="result-section-title">Satisfaction finale</div>
+      <div class="result-sat-row">
+        <div class="result-sat-card">
+          <label>Client</label>
+          <span id="result-client-sat" style="color:var(--accent-green);">—</span>
+        </div>
+        <div class="result-sat-card">
+          <label>DAF</label>
+          <span id="result-daf-sat" style="color:var(--accent-cyan);">—</span>
+        </div>
+        <div class="result-sat-card">
+          <label>Moyenne</label>
+          <span id="result-avg-sat" style="color:var(--accent-gold);">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget recap -->
+    <div>
+      <div class="result-section-title">Votre estimation budgétaire</div>
+      <div id="result-budget"></div>
+    </div>
+
+    <!-- Journal des décisions -->
+    <div>
+      <div class="result-section-title">Détail des décisions</div>
+      <div style="overflow-x:auto;">
+        <table class="result-journal-table">
+          <thead>
+            <tr>
+              <th>Tour</th>
+              <th>Action</th>
+              <th>Choix effectué</th>
+              <th>Impact</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody id="result-journal"></tbody>
+        </table>
+      </div>
+    </div>
 
     <!-- Actions -->
-    <section class="actions">
-      <button id="btnExportCSV">Exporter en CSV</button>
-      <button id="btnReset" class="secondaire">Réinitialiser</button>
-    </section>
+    <div class="result-actions">
+      <button id="btn-next-level" class="btn btn-primary" style="display:none;">Niveau suivant →</button>
+      <button id="btn-retry" class="btn btn-secondary">🔄 Rejouer ce niveau</button>
+      <button id="btn-levels-from-results" class="btn btn-ghost">← Tous les niveaux</button>
+    </div>
 
-  </main>
+  </div>
+</div>
 
-  <footer>
-    <p>Simulateur budget projet — Chamecenil</p>
-  </footer>
+<!-- ══════════════════════════════════════════════════════════
+     CONTENEUR TOASTS
+     ══════════════════════════════════════════════════════════ -->
+<div id="toast-container"></div>
 
-  <script src="src/app.js"></script>
+<!-- ══════════════════════════════════════════════════════════
+     SCRIPTS (ordre impératif : data → engine → ui)
+     ══════════════════════════════════════════════════════════ -->
+<script src="src/data.js"></script>
+<script src="src/engine.js"></script>
+<script src="src/ui.js"></script>
+
+<!-- Points de progression accueil (généré après chargement) -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const dots = document.getElementById('home-progress-dots');
+    if (dots && window.BQ_ENGINE) {
+      dots.innerHTML = BQ_DATA.levels.map(l => {
+        const done = BQ_ENGINE.getHighScore(l.id) !== null;
+        return `<div class="home-progress-dot ${done ? 'done' : ''}" title="Niv. ${l.id}"></div>`;
+      }).join('');
+    }
+    // Corriger le bouton "start mission" qui doit être trouvé après init
+    const btn = document.getElementById('btn-start-mission');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        BQ_UI.showScreen('game');
+        // Déléguer à l'init du jeu
+        if (typeof _initGameScreenPublic === 'function') _initGameScreenPublic();
+      });
+    }
+  });
+</script>
+
 </body>
 </html>
