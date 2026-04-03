@@ -156,6 +156,18 @@ window.BQ_DATA = {
         good: "Bonne performance globale. Vous avez su construire une relation de confiance et proposer un budget raisonnable. Quelques hésitations sur les arbitrages techniques, mais rien de rédhibitoire.",
         poor: "Le sponsor a perdu confiance au fil des échanges. Des questions prématurées sur le budget et des estimations peu détaillées ont fragilisé votre position. À retenter avec une meilleure stratégie d'écoute.",
       },
+
+      budgetBilan: {
+        totalTarget: 51000,
+        tolerance: 0.10,
+        layers: [
+          { id:'licences',    label:'Licences SaaS (annuel)',      target:22000, hint:"Coût de location du CRM pour 50 utilisateurs sur 12 mois." },
+          { id:'integration', label:'Intégration ERP SAGE',         target:12000, hint:"Connexion bidirectionnelle entre le CRM et votre SAGE 2014." },
+          { id:'formation',   label:'Formation utilisateurs',        target:5000,  hint:"Accompagnement des 50 commerciaux à la prise en main." },
+          { id:'migration',   label:'Migration & qualité données',   target:6000,  hint:"Nettoyage et transfert des 15 ans de données clients depuis SAGE." },
+          { id:'provision',   label:'Provision risques (10%)',       target:6000,  hint:"Marge de sécurité standard pour absorber les imprévus." },
+        ],
+      },
     },
 
     // ════════════════════════════════════════════════════════════
@@ -260,6 +272,18 @@ window.BQ_DATA = {
         good: "Bonne proposition avec quelques ajustements. Le phasage était pertinent même si le budget aurait pu être mieux justifié.",
         poor: "La proposition n'a pas convaincu Isabelle. Un manque de décomposition et un ROI non documenté ont conduit au refus du projet.",
       },
+
+      budgetBilan: {
+        totalTarget: 40000,
+        tolerance: 0.10,
+        layers: [
+          { id:'design',      label:'UX / Design & maquettes',      target:8000,  hint:"Conception des interfaces et des parcours utilisateurs B2B." },
+          { id:'dev',         label:'Développement front & back',    target:14000, hint:"Intégration HTML/CSS + développement des fonctionnalités catalogue et commandes." },
+          { id:'integration', label:'Intégration API ERP',           target:9000,  hint:"Connexion au catalogue produits et aux stocks via l'API REST documentée." },
+          { id:'migration',   label:'Migration données & recette',   target:6000,  hint:"Import des 1 200 clients, 500 références + tests de validation." },
+          { id:'provision',   label:'Provision risques',             target:3000,  hint:"Marge de sécurité pour les aléas du projet (délai, API, bugs)." },
+        ],
+      },
     },
 
     // ════════════════════════════════════════════════════════════
@@ -363,6 +387,19 @@ window.BQ_DATA = {
         excellent: "Vous avez parfaitement navigué entre Bertrand et Christine, intégré la leçon de l'échec précédent et proposé un budget justifié avec ROI 5 ans. La mission est signée.",
         good: "Bonne performance sur un projet complexe. Le budget était cohérent même si quelques postes manquaient de détail.",
         poor: "Le projet ERP est trop complexe pour votre niveau actuel. Travaillez vos bases sur un projet plus simple.",
+      },
+
+      budgetBilan: {
+        totalTarget: 285000,
+        tolerance: 0.10,
+        layers: [
+          { id:'licences',    label:'Licences ERP (année 1)',          target:40000,  hint:"Coût de licence pour 800 utilisateurs sur la première année d'exploitation." },
+          { id:'parametre',   label:'Paramétrage & intégration',       target:90000,  hint:"4 modules × 4 sites — environ 100-130 JH à 800€/JH." },
+          { id:'migration',   label:'Migration données SAP',           target:40000,  hint:"20 ans de données SAP — audit qualité, nettoyage, 3 cycles de tests." },
+          { id:'formation',   label:'Formation 800 collaborateurs',    target:45000,  hint:"Formation en cascade : formateurs internes + sessions par profil métier." },
+          { id:'cdc',         label:'Conduite du changement',          target:28000,  hint:"10% du budget — plan com, ateliers, support post go-live sur 4 sites." },
+          { id:'provision',   label:'Provision risques (15%)',         target:42000,  hint:"15% est le standard sur les projets ERP multi-sites complexes." },
+        ],
       },
     },
   },

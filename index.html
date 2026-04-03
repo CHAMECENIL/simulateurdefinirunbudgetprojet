@@ -216,6 +216,63 @@
       <!-- Score badge tour -->
       <div id="turn-score-badge" class="turn-score-badge"></div>
 
+      <!-- ── BILAN BUDGÉTAIRE (tour 10) ─────────────────── -->
+      <div id="bilan-section" class="bilan-section" style="display:none;">
+
+        <div class="bilan-header">
+          <div class="bilan-header-icon">📊</div>
+          <div>
+            <h3 class="bilan-header-title">Bilan Budgétaire Final</h3>
+            <p class="bilan-header-sub">
+              Ventillez l'enveloppe par couche et soumettez-la au sponsor.
+              Tolérance autorisée : <b>± 10%</b> par poste · Contribue à <b>50%</b> de votre note.
+            </p>
+          </div>
+        </div>
+
+        <!-- Lignes de saisie (générées par JS) -->
+        <div id="bilan-layers" class="bilan-layers-form"></div>
+
+        <!-- Total -->
+        <div class="bilan-total-row">
+          <span class="bilan-total-label">TOTAL ENVELOPPE</span>
+          <span id="bilan-total-display" class="bilan-total-value">0 €</span>
+          <span id="bilan-total-cible" class="bilan-total-cible"></span>
+        </div>
+
+        <button id="btn-submit-bilan" class="btn btn-primary bilan-submit-btn">
+          ✅ Soumettre au sponsor
+        </button>
+
+        <!-- Résultat de validation -->
+        <div id="bilan-result" class="bilan-result-block" style="display:none;">
+          <div id="bilan-result-title" class="bilan-result-title"></div>
+
+          <div style="overflow-x:auto;">
+            <table class="bilan-result-table">
+              <thead>
+                <tr>
+                  <th>Couche budgétaire</th>
+                  <th>Votre estimation</th>
+                  <th>Référence sponsor</th>
+                  <th>Écart</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="bilan-result-tbody"></tbody>
+            </table>
+          </div>
+
+          <div id="bilan-score-line" class="bilan-score-line"></div>
+
+          <button id="btn-bilan-finish" class="btn btn-primary" style="width:100%; margin-top:.5rem;">
+            Voir les résultats finaux →
+          </button>
+        </div>
+
+      </div>
+      <!-- ── FIN BILAN ──────────────────────────────────── -->
+
     </div>
 
     <!-- Sidebar droite : budget -->

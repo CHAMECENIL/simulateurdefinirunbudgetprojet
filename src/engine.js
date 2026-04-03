@@ -29,6 +29,8 @@ window.BQ_ENGINE = (function () {
     budgetEstimateRange: { low: 0, high: 0 },
 
     stakeholderUsed: 0,
+    bilanCompleted: false,
+    bilanResult: null,
     journal: [],                 // { turn, actionLabel, choiceText, delta, points, isTrap }
 
     turnScores: [],              // { turn, points, maxPoints }
@@ -109,6 +111,8 @@ window.BQ_ENGINE = (function () {
     state.budgetItems = [];
     state.budgetEstimateRange = { low: 0, high: 0 };
     state.stakeholderUsed = 0;
+    state.bilanCompleted = false;
+    state.bilanResult = null;
     state.journal = [];
     state.turnScores = [];
     state.totalScore = 0;
@@ -309,6 +313,53 @@ window.BQ_ENGINE = (function () {
   }
 
   // ─────────────────────────────────────────────────────────
+  // BILAN BUDGÉTAIRE (tour 10)
+  // ─────────────────────────────────────────────────────────
+
+  function startBilan() {
+    const bilan = state._scenario?.budgetBilan;
+    if (!bilan) return null;
+    state.phase = 'bilan';
+    return bilan;
+  }
+
+  function submitBudgetBilan(allocations) {
+    const bilan = state._scenario?.budgetBilan;
+    if (!bilan) return null;
+
+    const tolerance = bilan.tolerance ?? 0.10;
+
+    // Évaluer chaque couche
+    const layerResults = bilan.layers.map(layer => {
+      const userAmount = parseFloat(allocations[layer.id]) || 0;
+      const diff       = layer.target > 0 ? Math.abs(userAmount - layer.target) / layer.target : 1;
+      const ok         = diff <= tolerance;
+      return { ...layer, userAmount, diffPct: Math.round(diff * 100), ok };
+    });
+
+    // Score bilan : % de couches dans la tolérance (pondéré égal)
+    const okCount    = layerResults.filter(r => r.ok).length;
+    const bilanScore = Math.round((okCount / layerResults.length) * 100);
+
+    // Vérifier le total
+    const userTotal  = bilan.layers.reduce((s, l) => s + (parseFloat(allocations[l.id]) || 0), 0);
+    const totalDiff  = bilan.totalTarget > 0 ? Math.abs(userTotal - bilan.totalTarget) / bilan.totalTarget : 1;
+    const totalOk    = totalDiff <= tolerance;
+
+    state.bilanCompleted = true;
+    state.bilanResult    = { layerResults, bilanScore, totalOk, userTotal };
+
+    return {
+      layerResults,
+      bilanScore,
+      totalOk,
+      userTotal,
+      targetTotal: bilan.totalTarget,
+      tolerance,
+    };
+  }
+
+  // ─────────────────────────────────────────────────────────
   // PARTIES PRENANTES — MODE QUESTIONNEMENT
   // ─────────────────────────────────────────────────────────
 
@@ -353,7 +404,16 @@ window.BQ_ENGINE = (function () {
     state.phase = 'end';
 
     // Calcul du score final
-    const ratio = state.totalMaxScore > 0 ? state.totalScore / state.totalMaxScore : 0;
+    // Actions = 50%, Bilan budgétaire = 50%
+    const actionRatio = state.totalMaxScore > 0 ? state.totalScore / state.totalMaxScore : 0;
+    let ratio;
+    if (state.bilanCompleted && state.bilanResult) {
+      const bilanRatio = state.bilanResult.bilanScore / 100;
+      ratio = (actionRatio * 0.5) + (bilanRatio * 0.5);
+    } else {
+      // Bilan non réalisé (timeout) : malus — seule la moitié des actions compte
+      ratio = actionRatio * 0.5;
+    }
     const stars = ratio >= 0.8 ? 3 : ratio >= 0.5 ? 2 : 1;
     const passed = stars >= BQ_DATA.config.passingStars;
 
@@ -476,6 +536,8 @@ window.BQ_ENGINE = (function () {
     selectActionType,
     selectChoice,
     nextTurn,
+    startBilan,
+    submitBudgetBilan,
     openStakeholder,
     closeStakeholder,
     endGame,

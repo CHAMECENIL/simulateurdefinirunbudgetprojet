@@ -149,6 +149,19 @@ window.BQ_UI = (function () {
     $('game-level-badge').textContent = `Niveau ${st.currentLevelId}`;
     $('game-scenario-title').textContent = scenario.title;
 
+    // Réinitialiser la section bilan
+    const bilanSection = $('bilan-section');
+    if (bilanSection) {
+      bilanSection.style.display = 'none';
+      const layersEl = $('bilan-layers');
+      if (layersEl) { layersEl.style.display = ''; layersEl.innerHTML = ''; }
+      $$('.bilan-total-row, .bilan-submit-btn').forEach(el => el.style.display = '');
+      const bilanResult = $('bilan-result');
+      if (bilanResult) bilanResult.style.display = 'none';
+    }
+    $('action-buttons').style.display = '';
+    $('btn-next-turn').classList.remove('bilan-mode');
+
     // Bouton questionnement parties prenantes
     _updateStakeholderBtn();
 
@@ -399,10 +412,16 @@ window.BQ_UI = (function () {
     // Score du tour
     _showTurnScore(result.points, choice.isTrap);
 
-    // Bouton "Tour suivant"
+    // Bouton "Tour suivant" — à turn 10 : bilan budgétaire
     const nextBtn = $('btn-next-turn');
     nextBtn.style.display = 'block';
-    nextBtn.textContent = st.currentTurn < BQ_DATA.config.turnsPerGame ? 'Tour suivant →' : 'Terminer la partie →';
+    if (st.currentTurn >= BQ_DATA.config.turnsPerGame) {
+      nextBtn.textContent = '📊 Réaliser le bilan budgétaire →';
+      nextBtn.classList.add('bilan-mode');
+    } else {
+      nextBtn.textContent = 'Tour suivant →';
+      nextBtn.classList.remove('bilan-mode');
+    }
   }
 
   function _showTurnScore(points, isTrap) {
@@ -725,6 +744,156 @@ window.BQ_UI = (function () {
   }
 
   // ─────────────────────────────────────────────────────────
+  // BILAN BUDGÉTAIRE — TOUR 10
+  // ─────────────────────────────────────────────────────────
+
+  function _showBilanForm() {
+    const bilan = BQ_ENGINE.startBilan();
+
+    // Masquer les éléments de jeu
+    $('choices-panel').classList.remove('visible');
+    $('btn-next-turn').style.display = 'none';
+    $('action-buttons').style.display = 'none';
+    $('bilan-result').style.display = 'none';
+
+    const section = $('bilan-section');
+    section.style.display = 'block';
+
+    if (!bilan) {
+      // Pas de bilan défini → résultats directs
+      const result = BQ_ENGINE.endGame('complete');
+      showResults(result);
+      return;
+    }
+
+    // En-tête
+    $('bilan-total-cible').textContent = `Cible totale approx. : ${_fmt(bilan.totalTarget)}`;
+
+    // Générer les lignes de saisie
+    const layersEl = $('bilan-layers');
+    layersEl.innerHTML = bilan.layers.map(layer => `
+      <div class="bilan-layer-row">
+        <div class="bilan-layer-info">
+          <span class="bilan-layer-label">${layer.label}</span>
+          <span class="bilan-layer-hint">💡 ${layer.hint}</span>
+        </div>
+        <div class="bilan-input-wrap">
+          <input type="number" class="bilan-input" id="bilan-${layer.id}"
+                 data-id="${layer.id}" min="0" step="500" placeholder="0" />
+          <span class="bilan-currency">€</span>
+        </div>
+      </div>
+    `).join('');
+
+    // Pré-remplir avec les postes déjà estimés pendant la partie
+    const st = BQ_ENGINE.getState();
+    st.budgetItems.forEach(item => {
+      bilan.layers.forEach(layer => {
+        if (item.label.toLowerCase().includes(layer.id) ||
+            layer.label.toLowerCase().includes(item.label.toLowerCase().split(' ')[0])) {
+          const input = $(`bilan-${layer.id}`);
+          if (input && !input.value) input.value = item.amount;
+        }
+      });
+    });
+
+    // Total live
+    _updateBilanTotal();
+    layersEl.querySelectorAll('.bilan-input').forEach(inp => {
+      inp.addEventListener('input', _updateBilanTotal);
+    });
+
+    // Bouton soumettre
+    $('btn-submit-bilan').onclick = _onBilanSubmit;
+
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function _updateBilanTotal() {
+    let total = 0;
+    $$('.bilan-input').forEach(inp => { total += parseFloat(inp.value) || 0; });
+    const el = $('bilan-total-display');
+    if (el) {
+      el.textContent = _fmt(total);
+      const target = BQ_ENGINE.getState()._scenario?.budgetBilan?.totalTarget || 0;
+      const diff   = target > 0 ? Math.abs(total - target) / target : 0;
+      el.style.color = diff <= 0.10 ? 'var(--accent-green)' : diff <= 0.20 ? 'var(--accent-gold)' : 'var(--accent-red)';
+    }
+  }
+
+  function _onBilanSubmit() {
+    const bilan = BQ_ENGINE.getState()._scenario?.budgetBilan;
+    if (!bilan) return;
+
+    // Collecter les valeurs
+    const allocations = {};
+    bilan.layers.forEach(layer => {
+      const input = $(`bilan-${layer.id}`);
+      allocations[layer.id] = parseFloat(input?.value) || 0;
+    });
+
+    const result = BQ_ENGINE.submitBudgetBilan(allocations);
+    if (!result) return;
+
+    _renderBilanResult(result);
+  }
+
+  function _renderBilanResult(result) {
+    // Cacher le formulaire, montrer les résultats
+    $('bilan-layers').style.display = 'none';
+    $$('.bilan-total-row, .bilan-submit-btn').forEach(el => el.style.display = 'none');
+
+    const resultBlock = $('bilan-result');
+    resultBlock.style.display = 'block';
+
+    // Titre sponsor
+    const allOk = result.layerResults.every(r => r.ok);
+    const score  = result.bilanScore;
+    $('bilan-result-title').textContent = score >= 80
+      ? '✅ Le sponsor valide votre bilan budgétaire !'
+      : score >= 50
+        ? '🟡 Le sponsor accepte avec réserves.'
+        : '❌ Le sponsor rejette votre ventilation budgétaire.';
+    $('bilan-result-title').className = `bilan-result-title ${score >= 80 ? 'ok' : score >= 50 ? 'partial' : 'ko'}`;
+
+    // Tableau des résultats ligne par ligne
+    $('bilan-result-tbody').innerHTML = result.layerResults.map(r => `
+      <tr class="${r.ok ? 'bilan-row-ok' : 'bilan-row-ko'}">
+        <td>${r.label}</td>
+        <td class="bilan-td-amount">${_fmt(r.userAmount)}</td>
+        <td class="bilan-td-amount bilan-ref">${_fmt(r.target)}</td>
+        <td class="${r.ok ? 'bilan-diff-ok' : 'bilan-diff-ko'}">${r.diffPct}%</td>
+        <td class="bilan-status">${r.ok ? '✅' : '❌'}</td>
+      </tr>
+    `).join('') + `
+      <tr class="bilan-total-row-result ${result.totalOk ? 'bilan-row-ok' : 'bilan-row-ko'}">
+        <td><b>TOTAL ENVELOPPE</b></td>
+        <td class="bilan-td-amount"><b>${_fmt(result.userTotal)}</b></td>
+        <td class="bilan-td-amount bilan-ref"><b>${_fmt(result.targetTotal)}</b></td>
+        <td class="${result.totalOk ? 'bilan-diff-ok' : 'bilan-diff-ko'}">
+          ${Math.round(Math.abs(result.userTotal - result.targetTotal) / result.targetTotal * 100)}%
+        </td>
+        <td class="bilan-status">${result.totalOk ? '✅' : '❌'}</td>
+      </tr>
+    `;
+
+    // Score bilan
+    $('bilan-score-line').innerHTML = `
+      <span>Score bilan : <b>${score}%</b></span>
+      <span class="bilan-score-weight">Contribue à <b>50%</b> de votre note finale</span>
+      <span class="bilan-tolerance">Tolérance autorisée : ± ${Math.round(result.tolerance * 100)}% par poste</span>
+    `;
+
+    // Bouton fin
+    $('btn-bilan-finish').onclick = () => {
+      const gameResult = BQ_ENGINE.endGame('complete');
+      showResults(gameResult);
+    };
+
+    resultBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ─────────────────────────────────────────────────────────
   // CALLBACK DU MOTEUR — fin de partie déclenchée par timer
   // ─────────────────────────────────────────────────────────
 
@@ -734,13 +903,12 @@ window.BQ_UI = (function () {
     showResults(gameResult);
   }
 
-  // Patch nextTurn dans BQ_ENGINE pour détecter la fin
+  // Patch nextTurn dans BQ_ENGINE : au tour 10, lancer le bilan avant endGame
   const _origNextTurn = BQ_ENGINE.nextTurn.bind(BQ_ENGINE);
   BQ_ENGINE.nextTurn = function () {
     const st = BQ_ENGINE.getState();
     if (st.currentTurn >= BQ_DATA.config.turnsPerGame) {
-      const result = BQ_ENGINE.endGame('complete');
-      showResults(result);
+      _showBilanForm();
       return null;
     }
     return _origNextTurn();
